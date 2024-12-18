@@ -5,10 +5,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import static com.coordinater_service.constants.URLConstants.*;
+
 @Service
 @RequiredArgsConstructor
 public class CoOrdinaterService {
-   private final RestTemplate restTemplate;
+
+    private final RestTemplate restTemplate;
 
     public String placeOrder(TransactionDataDTO transactionDataDTO) {
         if(prepare(transactionDataDTO)){
@@ -22,20 +25,20 @@ public class CoOrdinaterService {
     }
 
     public String rollback(TransactionDataDTO transactionDataDTO) {
-         callExternalApis("http://localhost:8080/api/order/rollback", transactionDataDTO);
-         callExternalApis("http://localhost:8081/api/payment/rollback", transactionDataDTO);
+         callExternalApis(ROLLBACK80_URL, transactionDataDTO);
+         callExternalApis(ROLLBACK81_URL, transactionDataDTO);
         return "Transaction Declined";
     }
 
     private boolean commit(TransactionDataDTO transactionDataDTO) {
-        boolean isOrderCommitted = callExternalApis("http://localhost:8080/api/order/commit", transactionDataDTO);
-        boolean isPaymentCommitted = callExternalApis("http://localhost:8081/api/payment/commit", transactionDataDTO);
+        boolean isOrderCommitted = callExternalApis(COMMIT80_URL, transactionDataDTO);
+        boolean isPaymentCommitted = callExternalApis(COMMIT81_URL, transactionDataDTO);
         return isOrderCommitted&&isPaymentCommitted;
     }
 
     public boolean prepare(TransactionDataDTO transactionDataDTO) {
-        boolean isOrderPrepared = callExternalApis("http://localhost:8080/api/order/prepare", transactionDataDTO);
-        boolean isPaymentPrepared = callExternalApis("http://localhost:8081/api/payment/prepare", transactionDataDTO);
+        boolean isOrderPrepared = callExternalApis(PREPARE80_URL, transactionDataDTO);
+        boolean isPaymentPrepared = callExternalApis(PREPARE81_URL, transactionDataDTO);
         return isOrderPrepared&&isPaymentPrepared;
     }
 
